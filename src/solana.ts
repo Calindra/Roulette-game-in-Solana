@@ -1,12 +1,18 @@
+import { sendAndConfirmTransaction, SystemProgram } from "@solana/web3.js";
+import { Signer } from "ethers";
+import { connect } from "./connect";
+import { AdaptedWallet, getProgram } from "./solana/adapter";
 const web3 = require("@solana/web3.js");
 
+const { signer } = connect(0);
 
 // Getting Wallet Balance
 
-const getWalletBalance = async (pubk) => {
+export const getWalletBalance = async (pubk: string) => {
     try {
-        const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
+        const { connection } = await getProgram(signer);
         const balance = await connection.getBalance(new web3.PublicKey(pubk));
+        console.log(`Wallet balance`, balance);
         return balance / web3.LAMPORTS_PER_SOL;
     } catch (err) {
         console.log(err);
@@ -15,20 +21,20 @@ const getWalletBalance = async (pubk) => {
 
 // Signing the Transaction
 
-const transferSOL = async (from, to, transferAmt) => {
+export const transferSOL = async (from: Signer, to: AdaptedWallet, transferAmt: number) => {
     try {
-        const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
+        const { connection, wallet } = await getProgram(from);
         const transaction = new web3.Transaction().add(
-            web3.SystemProgram.transfer({
-                fromPubkey: new web3.PublicKey(from.publicKey.toString()),
+            SystemProgram.transfer({
+                fromPubkey: new web3.PublicKey(wallet.publicKey.toString()),
                 toPubkey: new web3.PublicKey(to.publicKey.toString()),
                 lamports: transferAmt * web3.LAMPORTS_PER_SOL
             })
         )
-        const signature = await web3.sendAndConfirmTransaction(
+        const signature = await sendAndConfirmTransaction(
             connection,
             transaction,
-            [from]
+            []
         )
         return signature;
     } catch (err) {
@@ -36,9 +42,9 @@ const transferSOL = async (from, to, transferAmt) => {
     }
 }
 
-const airDropSol = async (wallet, transferAmt) => {
+export const airDropSol = async (wallet: any, transferAmt: number) => {
     try {
-        const connection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
+        const { connection } = await getProgram(signer);
         const fromAirDropSignature = await connection.requestAirdrop(new web3.PublicKey(wallet.publicKey.toString()), transferAmt * web3.LAMPORTS_PER_SOL);
         await connection.confirmTransaction(fromAirDropSignature);
     } catch (err) {
@@ -46,4 +52,3 @@ const airDropSol = async (wallet, transferAmt) => {
     }
 }
 
-module.exports = {getWalletBalance,transferSOL,airDropSol}
