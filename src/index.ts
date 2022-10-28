@@ -85,7 +85,7 @@ async function main() {
         if (!userSigner || !treasurySigner) {
             throw new Error('Missing signer');
         }
-        await airDropSol(userWallet, 2);
+        //await airDropSol(userWallet, 2);
         console.log('User publicKey:', userWallet.publicKey.toBase58());
         init();
         const generateRandomNumber = randomNumber(1, 5);

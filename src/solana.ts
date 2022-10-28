@@ -12,7 +12,7 @@ export const getWalletBalance = async (pubk: string) => {
     try {
         const { connection } = await getProgram(signer);
         const balance = await connection.getBalance(new web3.PublicKey(pubk));
-        console.log(`Wallet balance`, balance);
+        console.log(`Wallet balance`, balance / web3.LAMPORTS_PER_SOL);
         return balance / web3.LAMPORTS_PER_SOL;
     } catch (err) {
         console.log(err);

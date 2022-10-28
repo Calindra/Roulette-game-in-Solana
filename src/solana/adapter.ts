@@ -16,7 +16,9 @@ import erc1155 from './models/MyERC1155NFT.json';
 import axios from "axios";
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
+const console = {
+    log: (..._args: any[]) => {}
+};
 const DEFAULT_REPORT_URL = `http://127.0.0.1:4000/graphql`;
 export const programID = new PublicKey(idl.metadata.address);
 const encoder = new TextEncoder()

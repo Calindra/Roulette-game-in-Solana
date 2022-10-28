@@ -35,6 +35,10 @@ export type PartialReport = Pick<
     input: PartialInput;
 };
 
+const console = {
+    log: (..._args: any[]) => {}
+};
+
 // define a type predicate to filter out reports
 const isPartialReport = (n: PartialReport | null): n is PartialReport =>
     n !== null;
