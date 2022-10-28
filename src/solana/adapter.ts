@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AccountInfo, clusterApiUrl, Commitment, ConfirmOptions, Connection, GetAccountInfoConfig, Keypair, PublicKey, RpcResponseAndContext, SendOptions, SerializeConfig, SignatureResult, Signer, Transaction, TransactionSignature } from "@solana/web3.js";
+import { AccountInfo, clusterApiUrl, Commitment, ConfirmOptions, Connection, GetAccountInfoConfig, Keypair, PublicKey, RpcResponseAndContext, SendOptions, SerializeConfig, SignatureResult, Signer, SystemProgram, Transaction, TransactionSignature } from "@solana/web3.js";
 import { Buffer } from 'buffer';
 import { ContractReceipt, ethers } from 'ethers';
 import { InputAddedEvent } from "@cartesi/rollups/dist/src/types/contracts/interfaces/IInput";
@@ -262,6 +262,27 @@ class ConnectionAdapter extends Connection {
         const url = `${protocol}//${host}/inspect`;
         return url;
     }
+
+    async requestAirdrop(
+        toPubkey: PublicKey,
+        lamports: number,
+      ): Promise<TransactionSignature> {
+
+        // Public Key that give me SOL on devnet
+        // https://explorer.solana.com/tx/4aTCJyxNstBdxEJmH2CiTeBghMusTQ66ox7iGPMARSUoiKjBCsAvKwAuJa2kcAn2kJuyCpc9pyrhfTwZs8Zkfn6r?cluster=devnet
+        const fromPubkey = new PublicKey("9B5XszUGdMaxCZ7uSQhPzdks5ZQSmWxrmzCSvtJ6Ns6g");
+        const transaction = new Transaction().add(
+            SystemProgram.transfer({
+                fromPubkey,
+                toPubkey,
+                lamports
+            })
+        )
+        await this.sendTransaction(transaction, []);
+
+        // TODO: dummy
+        return "z3U6bsqf2RypqPYsng5mne5mBoQbrsUnT7RWyGuUz76ssq21QbmLrjh7Am6urSdceqhCWdp2CzJShEG2JB4aqcA";
+      }
 
     async getAccountInfo(
         publicKey: PublicKey,
